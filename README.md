@@ -1,4 +1,3 @@
-```markdown
 # Estrutura de Dados - Universidade Federal de Santa Maria (UFSM)
 
 Bem-vindo ao repositório do curso de **Estrutura de Dados** oferecido pela Universidade Federal de Santa Maria (UFSM). Este repositório contém implementações, exercícios e projetos realizados ao longo da disciplina, abordando tópicos fundamentais e avançados de estruturas de dados com ênfase em aplicações práticas e desempenho.
