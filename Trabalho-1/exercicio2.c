@@ -1,33 +1,37 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct lista {
-    int linha;
-    int coluna;
-    int info;
-    struct lista* prox;
-} Lista;
+// Estrutura para armazenar os elementos não nulos da matriz
+struct lista {
+    int linha;          // Linha do elemento não nulo
+    int coluna;         // Coluna do elemento não nulo
+    int info;           // Valor do elemento não nulo
+    struct lista* prox; // Apontador para o próximo elemento não nulo
+};
+typedef struct lista Lista;
 
-typedef struct {
-    int linhas;
-    int colunas;
-    Lista* prim;
-} Esparsa;
+// Estrutura para a matriz esparsa
+struct esparsa {
+    int linhas;         // Número de linhas da matriz
+    int colunas;        // Número de colunas da matriz
+    Lista* prim;        // Apontador para o primeiro nó da lista de elementos não nulos
+};
+typedef struct esparsa Esparsa;
 
 // Função para criar a matriz esparsa
-Esparsa* criar_matriz(int linhas, int colunas) {
-    Esparsa* matriz = (Esparsa*) malloc(sizeof(Esparsa));
+Esparsa* criar_matriz_esparsa(int linhas, int colunas) {
+    Esparsa* matriz = (Esparsa*)malloc(sizeof(Esparsa));
     matriz->linhas = linhas;
     matriz->colunas = colunas;
     matriz->prim = NULL;
     return matriz;
 }
 
-// Função para inserir um valor não nulo na matriz esparsa
-void inserir_valor(Esparsa* matriz, int linha, int coluna, int valor) {
-    if (valor == 0) return;
+// Funcao para adicionar um elemento não nulo na matriz esparsa
+void adicionar_elemento(Esparsa* matriz, int linha, int coluna, int valor) {
+    if (valor == 0) return; // Não armazena valores nulos
 
-    Lista* novo = (Lista*) malloc(sizeof(Lista));
+    Lista* novo = (Lista*)malloc(sizeof(Lista));
     novo->linha = linha;
     novo->coluna = coluna;
     novo->info = valor;
@@ -35,80 +39,105 @@ void inserir_valor(Esparsa* matriz, int linha, int coluna, int valor) {
     matriz->prim = novo;
 }
 
-// Função para preencher a matriz com valores não nulos
+// Funcao para preencher a matriz com valores não nulos
 void preencher_matriz(Esparsa* matriz) {
     int linha, coluna, valor;
-    printf("Digite os elementos não nulos (linha, coluna, valor). Digite -1 para finalizar:\n");
+    printf("Digite os elementos não nulos (linha coluna valor). Digite -1 para encerrar.\n");
+
     while (1) {
         printf("Linha: ");
         scanf("%d", &linha);
         if (linha == -1) break;
+
         printf("Coluna: ");
         scanf("%d", &coluna);
         printf("Valor: ");
         scanf("%d", &valor);
-        inserir_valor(matriz, linha, coluna, valor);
+
+        if (linha >= 0 && linha < matriz->linhas && coluna >= 0 && coluna < matriz->colunas) {
+            adicionar_elemento(matriz, linha, coluna, valor);
+        } else {
+            printf("Posição inválida!\n");
+        }
     }
 }
 
-// Função para imprimir a matriz esparsa
+// Funcao para imprimir a matriz esparsa completa
 void imprimir_matriz(Esparsa* matriz) {
-    Lista* atual = matriz->prim;
     for (int i = 0; i < matriz->linhas; i++) {
         for (int j = 0; j < matriz->colunas; j++) {
-            int valor = 0;
-            while (atual != NULL) {
+            int encontrado = 0;
+            for (Lista* atual = matriz->prim; atual != NULL; atual = atual->prox) {
                 if (atual->linha == i && atual->coluna == j) {
-                    valor = atual->info;
+                    printf("%d ", atual->info);
+                    encontrado = 1;
                     break;
                 }
-                atual = atual->prox;
             }
-            printf("%d ", valor);
+            if (!encontrado) printf("0 ");
         }
         printf("\n");
     }
 }
 
-// Função para consultar um elemento na matriz
+// Funcao para consultar um elemento específico na matriz
 int consultar_elemento(Esparsa* matriz, int linha, int coluna) {
-    Lista* atual = matriz->prim;
-    while (atual != NULL) {
+    for (Lista* atual = matriz->prim; atual != NULL; atual = atual->prox) {
         if (atual->linha == linha && atual->coluna == coluna) {
             return atual->info;
         }
-        atual = atual->prox;
     }
-    return 0; // Retorna 0 para elementos nulos
+    return 0; // Retorna 0 se o elemento for nulo
 }
 
-// Função para calcular o somatório de uma linha
+// Funcao para calcular o somatório de uma linha específica
 int somatorio_linha(Esparsa* matriz, int linha) {
     int soma = 0;
-    Lista* atual = matriz->prim;
-    while (atual != NULL) {
+    for (Lista* atual = matriz->prim; atual != NULL; atual = atual->prox) {
         if (atual->linha == linha) {
             soma += atual->info;
         }
-        atual = atual->prox;
     }
     return soma;
 }
 
-// Função para calcular o percentual de elementos não nulos
+// Funcao para calcular o percentual de elementos não nulos
 float percentual_nao_nulos(Esparsa* matriz) {
-    int total_elementos = matriz->linhas * matriz->colunas;
+    int total = matriz->linhas * matriz->colunas;
     int nao_nulos = 0;
-    Lista* atual = matriz->prim;
-    while (atual != NULL) {
+    for (Lista* atual = matriz->prim; atual != NULL; atual = atual->prox) {
         nao_nulos++;
-        atual = atual->prox;
     }
-    return ((float)nao_nulos / total_elementos) * 100;
+    return (nao_nulos * 100.0) / total;
 }
 
-// Função para liberar a memória da matriz esparsa
-void liberar_matriz(Esparsa* matriz) {
+// Funcao principal
+int main() {
+    int linhas, colunas;
+    printf("Digite o número de linhas e colunas da matriz esparsa: ");
+    scanf("%d %d", &linhas, &colunas);
+
+    Esparsa* matriz = criar_matriz_esparsa(linhas, colunas);
+    preencher_matriz(matriz);
+
+    printf("\nMatriz completa:\n");
+    imprimir_matriz(matriz);
+
+    int linha, coluna;
+    printf("\nDigite a linha e a coluna do elemento a consultar: ");
+    scanf("%d %d", &linha, &coluna);
+    int elemento = consultar_elemento(matriz, linha, coluna);
+    printf("Elemento na posição [%d][%d]: %d\n", linha, coluna, elemento);
+
+    printf("\nDigite a linha para calcular o somatório: ");
+    scanf("%d", &linha);
+    int soma = somatorio_linha(matriz, linha);
+    printf("Somatório da linha %d: %d\n", linha, soma);
+
+    float percentual = percentual_nao_nulos(matriz);
+    printf("\nPercentual de elementos não nulos: %.2f%%\n", percentual);
+
+    // Libera a memória alocada
     Lista* atual = matriz->prim;
     while (atual != NULL) {
         Lista* temp = atual;
@@ -116,40 +145,6 @@ void liberar_matriz(Esparsa* matriz) {
         free(temp);
     }
     free(matriz);
-}
-
-// Função principal
-int main() {
-    int linhas, colunas;
-    printf("Digite o número de linhas da matriz: ");
-    scanf("%d", &linhas);
-    printf("Digite o número de colunas da matriz: ");
-    scanf("%d", &colunas);
-
-    Esparsa* matriz = criar_matriz(linhas, colunas);
-    preencher_matriz(matriz);
-
-    printf("Matriz Esparsa:\n");
-    imprimir_matriz(matriz);
-
-    int linha, coluna;
-    printf("Consultar elemento - informe a linha e coluna:\n");
-    printf("Linha: ");
-    scanf("%d", &linha);
-    printf("Coluna: ");
-    scanf("%d", &coluna);
-    int elemento = consultar_elemento(matriz, linha, coluna);
-    printf("Elemento em (%d, %d): %d\n", linha, coluna, elemento);
-
-    printf("Digite a linha para calcular o somatório: ");
-    scanf("%d", &linha);
-    int soma = somatorio_linha(matriz, linha);
-    printf("Somatório da linha %d: %d\n", linha, soma);
-
-    float percentual = percentual_nao_nulos(matriz);
-    printf("Percentual de elementos não nulos: %.2f%%\n", percentual);
-
-    liberar_matriz(matriz);
 
     return 0;
 }

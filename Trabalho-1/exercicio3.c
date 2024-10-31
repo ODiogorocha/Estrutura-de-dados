@@ -1,161 +1,113 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct nodo {
-    int valor;
-    struct nodo *prox, *ant;
-} Nodo;
+// Estrutura para os elementos que violam a matriz identidade
+struct elemento {
+    int linha;          // Linha do elemento
+    int coluna;         // Coluna do elemento
+    int valor;          // Valor do elemento que viola a identidade
+    struct elemento* prox; // Apontador para o próximo elemento na lista de violação
+};
+typedef struct elemento Elemento;
 
-typedef struct {
-    int linhas;
-    int colunas;
-    Nodo* inicio;
-} MatrizDensa;
+// Estrutura da matriz identidade
+struct matriz_identidade {
+    int ordem;          // Ordem da matriz
+    Elemento* violacoes; // Lista de elementos que violam a matriz identidade
+};
+typedef struct matriz_identidade MatrizIdentidade;
 
-// Função para criar a matriz densa
-MatrizDensa* criar_matriz(int linhas, int colunas) {
-    MatrizDensa* matriz = (MatrizDensa*) malloc(sizeof(MatrizDensa));
-    matriz->linhas = linhas;
-    matriz->colunas = colunas;
-    matriz->inicio = NULL;
-
-    // Inicialização da lista com valores nulos (0)
-    Nodo* atual = NULL;
-    for (int i = 0; i < linhas * colunas; i++) {
-        Nodo* novo = (Nodo*) malloc(sizeof(Nodo));
-        novo->valor = 0;
-        novo->prox = NULL;
-        novo->ant = atual;
-        if (atual) {
-            atual->prox = novo;
-        } else {
-            matriz->inicio = novo;
-        }
-        atual = novo;
-    }
+// Funcao para criar a matriz identidade
+MatrizIdentidade* criar_matriz_identidade(int ordem) {
+    MatrizIdentidade* matriz = (MatrizIdentidade*)malloc(sizeof(MatrizIdentidade));
+    matriz->ordem = ordem;
+    matriz->violacoes = NULL;
     return matriz;
 }
 
-// Função para inserir valor na posição especificada
-void inserir_valor(MatrizDensa* matriz, int linha, int coluna, int valor) {
-    if (linha >= matriz->linhas || coluna >= matriz->colunas || linha < 0 || coluna < 0) {
-        printf("Posição inválida!\n");
-        return;
-    }
-
-    int posicao = linha * matriz->colunas + coluna;
-    Nodo* atual = matriz->inicio;
-
-    // Navega até a posição desejada
-    for (int i = 0; i < posicao; i++) {
-        atual = atual->prox;
-    }
-    atual->valor = valor;
+// Funcao para adicionar um elemento que viola a identidade
+void adicionar_violacao(MatrizIdentidade* matriz, int linha, int coluna, int valor) {
+    Elemento* novo = (Elemento*)malloc(sizeof(Elemento));
+    novo->linha = linha;
+    novo->coluna = coluna;
+    novo->valor = valor;
+    novo->prox = matriz->violacoes;
+    matriz->violacoes = novo;
 }
 
-// Função para imprimir a matriz
-void imprimir_matriz(MatrizDensa* matriz) {
-    Nodo* atual = matriz->inicio;
-    for (int i = 0; i < matriz->linhas; i++) {
-        for (int j = 0; j < matriz->colunas; j++) {
-            printf("%d ", atual->valor);
-            atual = atual->prox;
+// Funcao para preencher a matriz e verificar a identidade
+void preencher_matriz(MatrizIdentidade* matriz) {
+    int valor;
+    printf("Preencha a matriz (%d x %d):\n", matriz->ordem, matriz->ordem);
+    for (int i = 0; i < matriz->ordem; i++) {
+        for (int j = 0; j < matriz->ordem; j++) {
+            printf("Elemento [%d][%d]: ", i, j);
+            scanf("%d", &valor);
+
+            // Verificar a condição da identidade
+            if ((i == j && valor != 1) || (i != j && valor != 0)) {
+                adicionar_violacao(matriz, i, j, valor);
+            }
+        }
+    }
+}
+
+// Funcao para imprimir a matriz identidade
+void imprimir_matriz(MatrizIdentidade* matriz) {
+    printf("\nMatriz preenchida:\n");
+    for (int i = 0; i < matriz->ordem; i++) {
+        for (int j = 0; j < matriz->ordem; j++) {
+            int encontrado = 0;
+            for (Elemento* atual = matriz->violacoes; atual != NULL; atual = atual->prox) {
+                if (atual->linha == i && atual->coluna == j) {
+                    printf("%d ", atual->valor);
+                    encontrado = 1;
+                    break;
+                }
+            }
+            if (!encontrado) {
+                printf("%d ", (i == j) ? 1 : 0);
+            }
         }
         printf("\n");
     }
 }
 
-// Função para consultar o valor de um elemento na posição dada
-int consultar_elemento(MatrizDensa* matriz, int linha, int coluna) {
-    if (linha >= matriz->linhas || coluna >= matriz->colunas || linha < 0 || coluna < 0) {
-        printf("Posição inválida!\n");
-        return -1;
+// Funcao para mostrar os elementos que violam a identidade
+void mostrar_violacoes(MatrizIdentidade* matriz) {
+    if (matriz->violacoes == NULL) {
+        printf("A matriz é uma identidade.\n");
+    } else {
+        printf("Elementos que violam a propriedade de identidade:\n");
+        for (Elemento* atual = matriz->violacoes; atual != NULL; atual = atual->prox) {
+            printf("Elemento [%d][%d] = %d\n", atual->linha, atual->coluna, atual->valor);
+        }
     }
-
-    int posicao = linha * matriz->colunas + coluna;
-    Nodo* atual = matriz->inicio;
-
-    for (int i = 0; i < posicao; i++) {
-        atual = atual->prox;
-    }
-    return atual->valor;
 }
 
-// Função para calcular o somatório de uma linha
-int somatorio_linha(MatrizDensa* matriz, int linha) {
-    if (linha >= matriz->linhas || linha < 0) {
-        printf("Linha inválida!\n");
-        return 0;
-    }
+// Funcao principal
+int main() {
+    int ordem;
+    printf("Digite a ordem da matriz identidade: ");
+    scanf("%d", &ordem);
 
-    int soma = 0;
-    Nodo* atual = matriz->inicio;
+    MatrizIdentidade* matriz = criar_matriz_identidade(ordem);
+    preencher_matriz(matriz);
 
-    // Navega até o início da linha desejada
-    for (int i = 0; i < linha * matriz->colunas; i++) {
-        atual = atual->prox;
-    }
+    printf("\nMatriz completa:\n");
+    imprimir_matriz(matriz);
 
-    // Soma os elementos da linha
-    for (int j = 0; j < matriz->colunas; j++) {
-        soma += atual->valor;
-        atual = atual->prox;
-    }
+    printf("\n");
+    mostrar_violacoes(matriz);
 
-    return soma;
-}
-
-// Função para liberar a memória da matriz
-void liberar_matriz(MatrizDensa* matriz) {
-    Nodo* atual = matriz->inicio;
-    while (atual) {
-        Nodo* temp = atual;
+    // Libera a memória alocada
+    Elemento* atual = matriz->violacoes;
+    while (atual != NULL) {
+        Elemento* temp = atual;
         atual = atual->prox;
         free(temp);
     }
     free(matriz);
-}
-
-// Função principal
-int main() {
-    int linhas, colunas;
-    printf("Digite o número de linhas da matriz: ");
-    scanf("%d", &linhas);
-    printf("Digite o número de colunas da matriz: ");
-    scanf("%d", &colunas);
-
-    MatrizDensa* matriz = criar_matriz(linhas, colunas);
-
-    int linha, coluna, valor;
-    printf("Digite os elementos da matriz (linha, coluna, valor). Digite -1 para finalizar:\n");
-    while (1) {
-        printf("Linha: ");
-        scanf("%d", &linha);
-        if (linha == -1) break;
-        printf("Coluna: ");
-        scanf("%d", &coluna);
-        printf("Valor: ");
-        scanf("%d", &valor);
-        inserir_valor(matriz, linha, coluna, valor);
-    }
-
-    printf("Matriz:\n");
-    imprimir_matriz(matriz);
-
-    printf("Consultar elemento - informe a linha e coluna:\n");
-    printf("Linha: ");
-    scanf("%d", &linha);
-    printf("Coluna: ");
-    scanf("%d", &coluna);
-    valor = consultar_elemento(matriz, linha, coluna);
-    printf("Elemento em (%d, %d): %d\n", linha, coluna, valor);
-
-    printf("Digite a linha para calcular o somatório: ");
-    scanf("%d", &linha);
-    int soma = somatorio_linha(matriz, linha);
-    printf("Somatório da linha %d: %d\n", linha, soma);
-
-    liberar_matriz(matriz);
 
     return 0;
 }

@@ -1,5 +1,4 @@
 
-```markdown
 # Matrizes Especiais em C
 
 Este repositório contém implementações em C para manipulação de matrizes especiais: **matriz diagonal**, **matriz esparsa**, **matriz identidade** e **matriz tridimensional**. O objetivo do projeto é explorar otimizações de armazenamento e processamento usando alocação dinâmica e estruturas de dados específicas.

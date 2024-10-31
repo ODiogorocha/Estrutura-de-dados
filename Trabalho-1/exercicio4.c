@@ -1,136 +1,64 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// Estrutura para representar um elemento não-nulo na matriz esparsa
-typedef struct elemento {
-    int linha;
-    int coluna;
-    int valor;
-    struct elemento* prox;
-} Elemento;
-
-// Estrutura para a matriz esparsa
-typedef struct {
-    int linhas;
-    int colunas;
-    Elemento** linha_inicio;  // Array de ponteiros para o início de cada linha
-} MatrizEsparsa;
-
-// Função para criar a matriz esparsa
-MatrizEsparsa* criar_matriz(int linhas, int colunas) {
-    MatrizEsparsa* matriz = (MatrizEsparsa*) malloc(sizeof(MatrizEsparsa));
-    matriz->linhas = linhas;
-    matriz->colunas = colunas;
-    matriz->linha_inicio = (Elemento**) calloc(linhas, sizeof(Elemento*));
-    return matriz;
+// Função para alocar memória para uma matriz de 3 dimensões
+int*** aloca_matriz(int m, int n, int z) {
+    int ***mat = (int***)malloc(m * sizeof(int**));
+    for (int i = 0; i < m; i++) {
+        mat[i] = (int**)malloc(n * sizeof(int*));
+        for (int j = 0; j < n; j++) {
+            mat[i][j] = (int*)malloc(z * sizeof(int));
+        }
+    }
+    return mat;
 }
 
-// Função para inserir um valor na matriz esparsa
-void inserir_valor(MatrizEsparsa* matriz, int linha, int coluna, int valor) {
-    if (linha < 0 || linha >= matriz->linhas || coluna < 0 || coluna >= matriz->colunas) {
-        printf("Posição inválida!\n");
-        return;
-    }
-
-    Elemento* novo = (Elemento*) malloc(sizeof(Elemento));
-    novo->linha = linha;
-    novo->coluna = coluna;
-    novo->valor = valor;
-    novo->prox = NULL;
-
-    // Inserir o elemento na posição correta da lista da linha
-    Elemento** atual = &(matriz->linha_inicio[linha]);
-    while (*atual && (*atual)->coluna < coluna) {
-        atual = &((*atual)->prox);
-    }
-    novo->prox = *atual;
-    *atual = novo;
-}
-
-// Função para imprimir a matriz esparsa
-void imprimir_matriz(MatrizEsparsa* matriz) {
-    for (int i = 0; i < matriz->linhas; i++) {
-        Elemento* atual = matriz->linha_inicio[i];
-        for (int j = 0; j < matriz->colunas; j++) {
-            if (atual && atual->coluna == j) {
-                printf("%d ", atual->valor);
-                atual = atual->prox;
-            } else {
-                printf("0 ");
+// Função para preencher a matriz com valores fornecidos pelo usuário
+void preenche_matriz(int m, int n, int z, int ***mat) {
+    printf("Preencha a matriz (%d x %d x %d):\n", m, n, z);
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < n; j++) {
+            for (int k = 0; k < z; k++) {
+                printf("Elemento [%d][%d][%d]: ", i, j, k);
+                scanf("%d", &mat[i][j][k]);
             }
+        }
+    }
+}
+
+// Função para imprimir a matriz
+void imprime_matriz(int m, int n, int z, int ***mat) {
+    printf("\nMatriz (%d x %d x %d):\n", m, n, z);
+    for (int i = 0; i < m; i++) {
+        printf("Camada %d:\n", i);
+        for (int j = 0; j < n; j++) {
+            for (int k = 0; k < z; k++) {
+                printf("%d ", mat[i][j][k]);
+            }
+            printf("\n");
         }
         printf("\n");
     }
 }
 
-// Função para consultar o valor de um elemento na posição dada
-int consultar_elemento(MatrizEsparsa* matriz, int linha, int coluna) {
-    if (linha < 0 || linha >= matriz->linhas || coluna < 0 || coluna >= matriz->colunas) {
-        printf("Posição inválida!\n");
-        return -1;
-    }
-
-    Elemento* atual = matriz->linha_inicio[linha];
-    while (atual && atual->coluna < coluna) {
-        atual = atual->prox;
-    }
-    if (atual && atual->coluna == coluna) {
-        return atual->valor;
-    }
-    return 0;
-}
-
-// Função para liberar a memória da matriz esparsa
-void liberar_matriz(MatrizEsparsa* matriz) {
-    for (int i = 0; i < matriz->linhas; i++) {
-        Elemento* atual = matriz->linha_inicio[i];
-        while (atual) {
-            Elemento* temp = atual;
-            atual = atual->prox;
-            free(temp);
-        }
-    }
-    free(matriz->linha_inicio);
-    free(matriz);
-}
-
 // Função principal
 int main() {
-    int linhas, colunas;
-    printf("Digite o número de linhas da matriz: ");
-    scanf("%d", &linhas);
-    printf("Digite o número de colunas da matriz: ");
-    scanf("%d", &colunas);
+    int m, n, z;
+    printf("Digite o número de linhas, colunas e profundidade da matriz: ");
+    scanf("%d %d %d", &m, &n, &z);
 
-    MatrizEsparsa* matriz = criar_matriz(linhas, colunas);
+    int ***mat = aloca_matriz(m, n, z);
+    preenche_matriz(m, n, z, mat);
+    imprime_matriz(m, n, z, mat);
 
-    int linha, coluna, valor;
-    printf("Digite os elementos da matriz (linha, coluna, valor). Digite -1 para finalizar:\n");
-    while (1) {
-        printf("Linha: ");
-        scanf("%d", &linha);
-        if (linha == -1) break;
-        printf("Coluna: ");
-        scanf("%d", &coluna);
-        printf("Valor: ");
-        scanf("%d", &valor);
-        if (valor != 0) {
-            inserir_valor(matriz, linha, coluna, valor);
+    // Liberando a memória alocada
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < n; j++) {
+            free(mat[i][j]);
         }
+        free(mat[i]);
     }
-
-    printf("Matriz esparsa:\n");
-    imprimir_matriz(matriz);
-
-    printf("Consultar elemento - informe a linha e coluna:\n");
-    printf("Linha: ");
-    scanf("%d", &linha);
-    printf("Coluna: ");
-    scanf("%d", &coluna);
-    valor = consultar_elemento(matriz, linha, coluna);
-    printf("Elemento em (%d, %d): %d\n", linha, coluna, valor);
-
-    liberar_matriz(matriz);
+    free(mat);
 
     return 0;
 }
