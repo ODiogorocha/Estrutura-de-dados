@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// Função para alocar memória para uma matriz de 3 dimensões
+// Funcao para alocar memoria para uma matriz de 3 dimensões
 int*** aloca_matriz(int m, int n, int z) {
     int ***mat = (int***)malloc(m * sizeof(int**));
     for (int i = 0; i < m; i++) {
@@ -13,7 +13,7 @@ int*** aloca_matriz(int m, int n, int z) {
     return mat;
 }
 
-// Função para preencher a matriz com valores fornecidos pelo usuário
+// Funcao para preencher a matriz com valores fornecidos pelo usuário
 void preenche_matriz(int m, int n, int z, int ***mat) {
     printf("Preencha a matriz (%d x %d x %d):\n", m, n, z);
     for (int i = 0; i < m; i++) {
@@ -26,7 +26,7 @@ void preenche_matriz(int m, int n, int z, int ***mat) {
     }
 }
 
-// Função para imprimir a matriz
+// Funcao para imprimir a matriz
 void imprime_matriz(int m, int n, int z, int ***mat) {
     printf("\nMatriz (%d x %d x %d):\n", m, n, z);
     for (int i = 0; i < m; i++) {
@@ -41,7 +41,7 @@ void imprime_matriz(int m, int n, int z, int ***mat) {
     }
 }
 
-// Função principal
+// Funcao principal
 int main() {
     int m, n, z;
     printf("Digite o número de linhas, colunas e profundidade da matriz: ");
@@ -51,7 +51,7 @@ int main() {
     preenche_matriz(m, n, z, mat);
     imprime_matriz(m, n, z, mat);
 
-    // Liberando a memória alocada
+    // Liberando a memoria alocada
     for (int i = 0; i < m; i++) {
         for (int j = 0; j < n; j++) {
             free(mat[i][j]);

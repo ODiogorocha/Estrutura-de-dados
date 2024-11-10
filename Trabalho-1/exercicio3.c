@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// Estrutura para os elementos que violam a matriz identidade
 struct elemento {
     int linha;          // Linha do elemento
     int coluna;         // Coluna do elemento
@@ -44,7 +43,6 @@ void preencher_matriz(MatrizIdentidade* matriz) {
             printf("Elemento [%d][%d]: ", i, j);
             scanf("%d", &valor);
 
-            // Verificar a condição da identidade
             if ((i == j && valor != 1) || (i != j && valor != 0)) {
                 adicionar_violacao(matriz, i, j, valor);
             }

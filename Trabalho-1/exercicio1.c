@@ -11,7 +11,7 @@ typedef struct diagonal Diagonal;
 Diagonal* criar_matriz_diagonal(int ordem) {
     Diagonal* matriz = (Diagonal*)malloc(sizeof(Diagonal));
     matriz->ordem = ordem;
-    matriz->v = (int*)malloc(ordem * sizeof(int)); // Aloca o vetor para a diagonal principal
+    matriz->v = (int*)malloc(ordem * sizeof(int)); 
     return matriz;
 }
 
@@ -43,7 +43,7 @@ void imprimir_matriz_diagonal(Diagonal* matriz) {
 int consultar_elemento(Diagonal* matriz, int linha, int coluna) {
     if (linha < 0 || coluna < 0 || linha >= matriz->ordem || coluna >= matriz->ordem) {
         printf("Posição fora dos limites da matriz.\n");
-        return -1; // Retorna -1 para indicar erro
+        return -1; 
     }
     return (linha == coluna) ? matriz->v[linha] : 0;
 }

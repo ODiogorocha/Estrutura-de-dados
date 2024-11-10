@@ -1,20 +1,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// Estrutura para armazenar os elementos não nulos da matriz
 struct lista {
-    int linha;          // Linha do elemento não nulo
-    int coluna;         // Coluna do elemento não nulo
-    int info;           // Valor do elemento não nulo
-    struct lista* prox; // Apontador para o próximo elemento não nulo
+    int linha;          // Linha do elemento nao nulo
+    int coluna;         // Coluna do elemento nao nulo
+    int info;           // Valor do elemento nao nulo
+    struct lista* prox; // Apontador para o próximo elemento nao nulo
 };
 typedef struct lista Lista;
 
 // Estrutura para a matriz esparsa
 struct esparsa {
-    int linhas;         // Número de linhas da matriz
-    int colunas;        // Número de colunas da matriz
-    Lista* prim;        // Apontador para o primeiro nó da lista de elementos não nulos
+    int linhas;         // numero de linhas da matriz
+    int colunas;        // numero de colunas da matriz
+    Lista* prim;        // Apontador para o primeiro nó da lista de elementos nao nulos
 };
 typedef struct esparsa Esparsa;
 
@@ -27,9 +26,9 @@ Esparsa* criar_matriz_esparsa(int linhas, int colunas) {
     return matriz;
 }
 
-// Funcao para adicionar um elemento não nulo na matriz esparsa
+// Funcao para adicionar um elemento nao nulo na matriz esparsa
 void adicionar_elemento(Esparsa* matriz, int linha, int coluna, int valor) {
-    if (valor == 0) return; // Não armazena valores nulos
+    if (valor == 0) return; // nao armazena valores nulos
 
     Lista* novo = (Lista*)malloc(sizeof(Lista));
     novo->linha = linha;
@@ -39,10 +38,10 @@ void adicionar_elemento(Esparsa* matriz, int linha, int coluna, int valor) {
     matriz->prim = novo;
 }
 
-// Funcao para preencher a matriz com valores não nulos
+// Funcao para preencher a matriz com valores nao nulos
 void preencher_matriz(Esparsa* matriz) {
     int linha, coluna, valor;
-    printf("Digite os elementos não nulos (linha coluna valor). Digite -1 para encerrar.\n");
+    printf("Digite os elementos nao nulos (linha coluna valor). Digite -1 para encerrar.\n");
 
     while (1) {
         printf("Linha: ");
@@ -57,7 +56,7 @@ void preencher_matriz(Esparsa* matriz) {
         if (linha >= 0 && linha < matriz->linhas && coluna >= 0 && coluna < matriz->colunas) {
             adicionar_elemento(matriz, linha, coluna, valor);
         } else {
-            printf("Posição inválida!\n");
+            printf("posicao inválida!\n");
         }
     }
 }
@@ -90,7 +89,7 @@ int consultar_elemento(Esparsa* matriz, int linha, int coluna) {
     return 0; // Retorna 0 se o elemento for nulo
 }
 
-// Funcao para calcular o somatório de uma linha específica
+// Funcao para calcular o somatorio de uma linha específica
 int somatorio_linha(Esparsa* matriz, int linha) {
     int soma = 0;
     for (Lista* atual = matriz->prim; atual != NULL; atual = atual->prox) {
@@ -101,7 +100,7 @@ int somatorio_linha(Esparsa* matriz, int linha) {
     return soma;
 }
 
-// Funcao para calcular o percentual de elementos não nulos
+// Funcao para calcular o percentual de elementos nao nulos
 float percentual_nao_nulos(Esparsa* matriz) {
     int total = matriz->linhas * matriz->colunas;
     int nao_nulos = 0;
@@ -114,7 +113,7 @@ float percentual_nao_nulos(Esparsa* matriz) {
 // Funcao principal
 int main() {
     int linhas, colunas;
-    printf("Digite o número de linhas e colunas da matriz esparsa: ");
+    printf("Digite o numero de linhas e colunas da matriz esparsa: ");
     scanf("%d %d", &linhas, &colunas);
 
     Esparsa* matriz = criar_matriz_esparsa(linhas, colunas);
@@ -127,15 +126,15 @@ int main() {
     printf("\nDigite a linha e a coluna do elemento a consultar: ");
     scanf("%d %d", &linha, &coluna);
     int elemento = consultar_elemento(matriz, linha, coluna);
-    printf("Elemento na posição [%d][%d]: %d\n", linha, coluna, elemento);
+    printf("Elemento na posicao [%d][%d]: %d\n", linha, coluna, elemento);
 
-    printf("\nDigite a linha para calcular o somatório: ");
+    printf("\nDigite a linha para calcular o somatorio: ");
     scanf("%d", &linha);
     int soma = somatorio_linha(matriz, linha);
-    printf("Somatório da linha %d: %d\n", linha, soma);
+    printf("somatorio da linha %d: %d\n", linha, soma);
 
     float percentual = percentual_nao_nulos(matriz);
-    printf("\nPercentual de elementos não nulos: %.2f%%\n", percentual);
+    printf("\nPercentual de elementos nao nulos: %.2f%%\n", percentual);
 
     // Libera a memória alocada
     Lista* atual = matriz->prim;
