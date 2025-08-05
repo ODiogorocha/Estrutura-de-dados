@@ -136,11 +136,3 @@ Para contribuir:
 
 ---
 
-## Contato
-
-Para dúvidas e sugestões sobre o conteúdo ou uso do repositório, entre em contato:
-
-- **Autor**: Diogo
-
----
-
