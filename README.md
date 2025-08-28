@@ -117,22 +117,5 @@ Para compilar e testar os códigos:
 
 ---
 
-## Contribuições
-
-Contribuições são bem-vindas! Caso encontre algum problema ou tenha sugestões para melhorias, por favor, abra uma [issue](https://github.com/seu-usuario/estrutura-de-dados/issues) ou envie um [pull request](https://github.com/seu-usuario/estrutura-de-dados/pulls).
-
-Para contribuir:
-
-1. Crie um fork do projeto.
-2. Faça suas modificações em um branch separado:
-   ```bash
-   git checkout -b feature/sua-melhoria
-   ```
-3. Envie suas alterações:
-   ```bash
-   git push origin feature/sua-melhoria
-   ```
-4. Abra um pull request para o branch `main`.
-
----
-
+### Senha 
+   ed20171
